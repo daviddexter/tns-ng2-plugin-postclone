@@ -69,6 +69,86 @@ function generateClassName() {
         class_name += (part[0].toUpperCase() + part.substr(1));
     }
     console.log('Using ' + class_name + ' as the TypeScript Class name..');
+    //renameFiles();
+    adjustScripts()
+}
+function adjustScripts() {
+    console.log('Adjusting scripts..');
+    fs.readdir(root_path,function(err,rootFiles){
+      rootFiles.forEach(file => {
+        if(file.endsWith('.json')){
+          replace({regex:seed_github_username,replacement:github_username,paths:[file],recursive:true,silent:true})
+          replace({regex:seed_plugin_name,replacement:plugin_name,paths:[file],recursive:true,silent:true})
+        }else if(file.endsWith('.ts')){
+          if(file !== "references.d.ts"){
+            console.log(file);
+            replace({regex:seed_tns_prefix,replacement:class_name,paths:[file],recursive:true,silent:true})
+            replace({regex:seed_class_name,replacement:class_name,paths:[file],recursive:true,silent:true})
+            replace({regex:seed_component,replacement:plugin_name + ".component",paths:[file],recursive:true,silent:true})
+            replace({regex:seed_directive,replacement:plugin_name + ".directive",paths:[file],recursive:true,silent:true})
+            replace({regex:seed_pipe,replacement:plugin_name + ".pipe",paths:[file],recursive:true,silent:true})
+            replace({regex:seed_service,replacement:plugin_name + ".service",paths:[file],recursive:true,silent:true})
+          }
+        }
+      });
+    });
+
+    fs.readdir(component_path,function(err,componentFiles){
+      componentFiles.forEach(file => {
+        var pathFile = component_path + "/" + file;
+        if(file.endsWith('.ts')){
+          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
+        }
+      });
+    });
+
+    fs.readdir(directive_path,function(err,directiveFiles){
+      directiveFiles.forEach(file => {
+        var pathFile = directive_path + "/" + file;
+        if(file.endsWith('.ts')){
+          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
+        }
+      });
+    });
+    fs.readdir(pipe_path,function(err,pipesFiles){
+      pipesFiles.forEach(file => {
+        var pathFile = pipe_path + "/" + file;
+        if(file.endsWith('.ts')){
+          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
+        }
+      });
+    });
+    fs.readdir(service_path,function(err,servicesFiles){
+      servicesFiles.forEach(file => {
+        var pathFile = service_path + "/" + file;
+        if(file.endsWith('.ts')){
+          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
+        }
+      });
+    });
+    fs.readdir("./src/app",function(err,appRootFiles){
+      appRootFiles.forEach(file => {
+        var pathFile = "./src/app/"+ file;
+        if(file.endsWith('.ts')){
+          replace({regex:seed_plugin_name,replacement:plugin_name,paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_class_name,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_component,replacement:plugin_name + ".component",paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_directive,replacement:plugin_name + ".directive",paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_pipe,replacement:plugin_name + ".pipe",paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_service,replacement:plugin_name + ".service",paths:[pathFile],recursive:true,silent:true})
+        }
+      });
+    });
+    fs.readdir("./src",function(err,srcRootFiles){
+      srcRootFiles.forEach(file => {
+        var pathFile = "./src/" + file;
+        if(file.endsWith('.json')){
+          replace({regex:seed_github_username,replacement:github_username,paths:[pathFile],recursive:true,silent:true})
+          replace({regex:seed_plugin_name,replacement:plugin_name,paths:[pathFile],recursive:true,silent:true})
+        }
+      });
+    })
     renameFiles();
 }
 
@@ -122,74 +202,7 @@ function renameFiles() {
           fs.rename( pathFile, newPath);
         }
       });
-    });
-    adjustScripts();
-}
-
-function adjustScripts() {
-    console.log('Adjusting scripts..');
-    fs.readdir(root_path,function(err,rootFiles){
-      rootFiles.forEach(file => {
-        if(file.endsWith('.json')){
-          replace({regex:seed_github_username,replacement:github_username,paths:[file],recursive:true,silent:true})
-          replace({regex:seed_plugin_name,replacement:plugin_name,paths:[file],recursive:true,silent:true})
-        }else if(file.endsWith('.ts')){
-          replace({regex:seed_tns_prefix,replacement:class_name,paths:[file],recursive:true,silent:true})
-          replace({regex:seed_class_name,replacement:class_name,paths:[file],recursive:true,silent:true})
-        }
-      });
-    });
-    fs.readdir(component_path,function(err,componentFiles){
-      componentFiles.forEach(file => {
-        var pathFile = component_path + "/" + file;
-        if(file.endsWith('.ts')){
-          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
-        }
-      });
-    });
-    fs.readdir(directive_path,function(err,directiveFiles){
-      directiveFiles.forEach(file => {
-        var pathFile = directive_path + "/" + file;
-        if(file.endsWith('.ts')){
-          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
-        }
-      });
-    });
-    fs.readdir(pipe_path,function(err,pipesFiles){
-      pipesFiles.forEach(file => {
-        var pathFile = pipe_path + "/" + file;
-        if(file.endsWith('.ts')){
-          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
-        }
-      });
-    });
-    fs.readdir(service_path,function(err,servicesFiles){
-      servicesFiles.forEach(file => {
-        var pathFile = service_path + "/" + file;
-        if(file.endsWith('.ts')){
-          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
-        }
-      });
-    });
-    fs.readdir("./src/app",function(err,appRootFiles){
-      appRootFiles.forEach(file => {
-        var pathFile = "./src/app/"+ file;
-        if(file.endsWith('.ts')){
-          replace({regex:seed_plugin_name,replacement:plugin_name,paths:[pathFile],recursive:true,silent:true})
-          replace({regex:seed_tns_prefix,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
-          replace({regex:seed_class_name,replacement:class_name,paths:[pathFile],recursive:true,silent:true})
-        }
-      });
-    });
-    fs.readdir("./src",function(err,srcRootFiles){
-      srcRootFiles.forEach(file => {
-        var pathFile = "./src/" + file;
-        if(file.endsWith('.json')){
-          replace({regex:seed_github_username,replacement:github_username,paths:[pathFile],recursive:true,silent:true})
-          replace({regex:seed_plugin_name,replacement:plugin_name,paths:[pathFile],recursive:true,silent:true})
-        }
-      });
-    })
+    });   
     initGit();
 }
 
